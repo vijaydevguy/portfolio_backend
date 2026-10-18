@@ -11,11 +11,22 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+// Allowed Origins (Localhost + Production Frontend)
+const allowedOrigins = ["http://localhost:3000", process.env.CLIENT_URL].filter(
+  Boolean,
+);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or keep-alive cron)
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, true); // Permissive for initial setup and preview deployments
+    },
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -43,7 +54,9 @@ async function startServer() {
   setupKeepAliveCron();
 
   app.listen(PORT, () => {
-    console.log(`🚀 [Server Running] Port: ${PORT} (Environment: ${process.env.NODE_ENV || "development"})`);
+    console.log(
+      `🚀 [Server Running] Port: ${PORT} (Environment: ${process.env.NODE_ENV || "development"})`,
+    );
     console.log(`📡 [Health Check]: http://localhost:${PORT}/`);
   });
 }
