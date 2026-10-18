@@ -1,0 +1,51 @@
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const { connectDB } = require("./config/db");
+const { setupKeepAliveCron } = require("./cron/keepAlive");
+
+// Load environment variables
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    credentials: true,
+  })
+);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+/**
+ * Root test endpoint ('/')
+ * Serves as a health-check and verification endpoint.
+ * Also used by the keep-alive cron job to keep the server awake.
+ */
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    status: "online",
+    message: "Portfolio Backend API is running successfully!",
+    timestamp: new Date().toISOString(),
+    uptime: `${Math.floor(process.uptime())}s`,
+  });
+});
+
+// Start Server
+async function startServer() {
+  // Connect to Database (reads MONGO_URI from .env)
+  await connectDB();
+
+  // Initialize Keep-Alive Cron Job
+  setupKeepAliveCron();
+
+  app.listen(PORT, () => {
+    console.log(`🚀 [Server Running] Port: ${PORT} (Environment: ${process.env.NODE_ENV || "development"})`);
+    console.log(`📡 [Health Check]: http://localhost:${PORT}/`);
+  });
+}
+
+startServer();
