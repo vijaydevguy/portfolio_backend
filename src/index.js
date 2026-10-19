@@ -78,6 +78,14 @@ app.get("/api/health/ping", async (_req, res) => {
 // Authentication Routes
 app.use("/api/auth", authRoutes);
 
+// Portfolio Dynamic Sections Routes
+const sectionRoutes = require("./routes/sectionRoutes");
+app.use("/api/sections", sectionRoutes);
+
+// Media Upload & Cloudinary Asset Management Routes
+const mediaRoutes = require("./routes/mediaRoutes");
+app.use("/api/media", mediaRoutes);
+
 // Global Error Handler Middleware
 app.use((err, _req, res, _next) => {
   console.error("Unhandled Server Error:", err);
