@@ -47,6 +47,34 @@ app.get("/", (_req, res) => {
   });
 });
 
+/**
+ * Health & Keep-Alive Ping Endpoint ('/api/health/ping')
+ * Queries the first user ID to ensure an active read operation on MongoDB,
+ * keeping both Render and MongoDB Atlas cluster awake and alive forever.
+ */
+const User = require("./models/User");
+app.get("/api/health/ping", async (_req, res) => {
+  try {
+    // Ultra-lightweight query: only fetches the _id of 1 user (< 20 bytes)
+    const sampleUser = await User.findOne().select("_id email").lean();
+    return res.status(200).json({
+      status: "alive",
+      message: "Render server and MongoDB database are active.",
+      dbConnected: true,
+      userFound: Boolean(sampleUser),
+      timestamp: new Date().toISOString(),
+      uptime: `${Math.floor(process.uptime())}s`,
+    });
+  } catch (error) {
+    console.error("Health ping error:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Database ping failed.",
+      error: error.message,
+    });
+  }
+});
+
 // Authentication Routes
 app.use("/api/auth", authRoutes);
 
