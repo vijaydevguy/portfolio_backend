@@ -31,6 +31,8 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const authRoutes = require("./routes/authRoutes");
+
 /**
  * Root test endpoint ('/')
  * Serves as a health-check and verification endpoint.
@@ -44,6 +46,19 @@ app.get("/", (_req, res) => {
     uptime: `${Math.floor(process.uptime())}s`,
   });
 });
+
+// Authentication Routes
+app.use("/api/auth", authRoutes);
+
+// Global Error Handler Middleware
+app.use((err, _req, res, _next) => {
+  console.error("Unhandled Server Error:", err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal server error occurred.",
+  });
+});
+
 
 // Start Server
 async function startServer() {
