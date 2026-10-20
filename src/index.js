@@ -98,6 +98,14 @@ app.use("/api/skills", skillRoutes);
 const experienceRoutes = require("./routes/experienceRoutes");
 app.use("/api/experiences", experienceRoutes);
 
+// Contact Inquiries & Form Submission Routes
+const contactRoutes = require("./routes/contactRoutes");
+app.use("/api/contact", contactRoutes);
+
+// Global Common Settings Routes (Cal.com, Phone, Email, WhatsApp)
+const settingsRoutes = require("./routes/settingsRoutes");
+app.use("/api/settings", settingsRoutes);
+
 // Global Error Handler Middleware
 app.use((err, _req, res, _next) => {
   console.error("Unhandled Server Error:", err);
