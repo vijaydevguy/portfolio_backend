@@ -197,6 +197,92 @@ const getRecentAssets = async (req, res) => {
  * @route   DELETE /api/media/:id
  * @access  Private (Logged-in admin/user)
  */
+/**
+ * @desc    Upload multiple media files concurrently using Promise.all
+ * @route   POST /api/media/upload-bulk
+ * @access  Private (Logged-in admin/user)
+ */
+const uploadMediaBulk = async (req, res) => {
+  try {
+    if (!process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      return res.status(500).json({
+        success: false,
+        message: "Cloudinary credentials missing on server.",
+      });
+    }
+
+    const files = req.files;
+    if (!files || !Array.isArray(files) || files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No files provided for bulk upload.",
+      });
+    }
+
+    const userId = req.user._id.toString();
+    const section = (req.body.section || "general").toLowerCase().trim();
+    const category = (req.body.category || "default").toLowerCase().trim();
+    const folderPath = `user_${userId}/${section}/${category}`;
+
+    // Upload all files concurrently to Cloudinary with Promise.all
+    const uploadPromises = files.map((file) => {
+      const uploadOptions = {
+        folder: folderPath,
+        resource_type: "auto",
+        use_filename: true,
+        unique_filename: true,
+      };
+
+      return uploadToCloudinary(file.buffer, uploadOptions)
+        .then(async (cloudinaryResult) => {
+          // Derive clean short path
+          const uploadRegex = /\/upload\/(?:[a-zA-Z0-9_,]+\/)?(.*)$/;
+          const match = cloudinaryResult.secure_url.match(uploadRegex);
+          const shortPath = match && match[1] ? match[1] : cloudinaryResult.public_id;
+
+          // Save asset record
+          const mediaDoc = await MediaAsset.create({
+            userId: req.user._id,
+            section,
+            category,
+            publicId: cloudinaryResult.public_id,
+            url: cloudinaryResult.url,
+            secureUrl: cloudinaryResult.secure_url,
+            shortPath,
+            originalName: file.originalname,
+            format: cloudinaryResult.format,
+            bytes: cloudinaryResult.bytes,
+            resourceType: cloudinaryResult.resource_type,
+          });
+
+          return {
+            id: mediaDoc._id,
+            publicId: cloudinaryResult.public_id,
+            url: cloudinaryResult.secure_url,
+            shortPath,
+            originalName: file.originalname,
+            format: cloudinaryResult.format,
+          };
+        });
+    });
+
+    const results = await Promise.all(uploadPromises);
+
+    return res.status(200).json({
+      success: true,
+      message: `Successfully uploaded ${results.length} files.`,
+      count: results.length,
+      assets: results,
+    });
+  } catch (error) {
+    console.error("uploadMediaBulk error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to bulk upload files.",
+    });
+  }
+};
+
 const deleteMediaAsset = async (req, res) => {
   try {
     const { id } = req.params;
@@ -254,6 +340,7 @@ const deleteMediaAsset = async (req, res) => {
 
 module.exports = {
   uploadMedia,
+  uploadMediaBulk,
   getRecentAssets,
   deleteMediaAsset,
 };

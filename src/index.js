@@ -90,6 +90,10 @@ app.use("/api/media", mediaRoutes);
 const projectRoutes = require("./routes/projectRoutes");
 app.use("/api/projects", projectRoutes);
 
+// Portfolio Skills & Technologies Routes
+const skillRoutes = require("./routes/skillRoutes");
+app.use("/api/skills", skillRoutes);
+
 // Global Error Handler Middleware
 app.use((err, _req, res, _next) => {
   console.error("Unhandled Server Error:", err);
