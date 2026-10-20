@@ -94,6 +94,10 @@ app.use("/api/projects", projectRoutes);
 const skillRoutes = require("./routes/skillRoutes");
 app.use("/api/skills", skillRoutes);
 
+// Portfolio Work Experience & Education Routes
+const experienceRoutes = require("./routes/experienceRoutes");
+app.use("/api/experiences", experienceRoutes);
+
 // Global Error Handler Middleware
 app.use((err, _req, res, _next) => {
   console.error("Unhandled Server Error:", err);
