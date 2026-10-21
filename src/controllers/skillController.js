@@ -1,10 +1,20 @@
 const Skill = require("../models/Skill");
+const { DEFAULT_SKILLS } = require("../data/defaultData");
+
+// Helper to auto-seed default skills if collection is empty
+const seedSkillsIfEmpty = async () => {
+  const count = await Skill.countDocuments();
+  if (count === 0 && Array.isArray(DEFAULT_SKILLS) && DEFAULT_SKILLS.length > 0) {
+    await Skill.insertMany(DEFAULT_SKILLS);
+  }
+};
 
 // @desc    Get all active skills for public portfolio
 // @route   GET /api/skills
 // @access  Public
 const getSkills = async (req, res) => {
   try {
+    await seedSkillsIfEmpty();
     const skills = await Skill.find({ isVisible: true }).sort({ order: 1, createdAt: 1 });
     return res.status(200).json({
       success: true,
@@ -26,6 +36,7 @@ const getSkills = async (req, res) => {
 // @access  Private/Admin
 const getAdminSkills = async (req, res) => {
   try {
+    await seedSkillsIfEmpty();
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.max(1, parseInt(req.query.limit, 10) || 10);
     const search = (req.query.search || "").trim();

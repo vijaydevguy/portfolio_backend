@@ -1,26 +1,5 @@
 const HeroSection = require("../models/HeroSection");
-
-/**
- * Default fallback data if no hero document has been saved in MongoDB yet
- */
-const DEFAULT_HERO_DATA = {
-  logoText: "Vijay Kumar",
-  logoUrl: "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792239298/logo_white_4x-1_caa6ld.png",
-  titlePrefix: "Software",
-  titleHighlight: "Developer",
-  subtitle: "Crafting scalable, high-performance web applications and intuitive digital experiences.",
-  heroImageUrl: "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1773030225/portfolio_app/hero_img.webp",
-  resumes: [
-    {
-      label: "Download Resume",
-      url: "https://drive.google.com/uc?export=download&id=1QfIBC0J_QRX4MRoycDwEdD3xBt2kKSpE",
-      isPrimary: true,
-    },
-  ],
-  ctaContactText: "Get in Touch",
-  ctaContactHref: "#contact",
-  isVisible: true,
-};
+const { DEFAULT_HERO_DATA } = require("../data/defaultData");
 
 /**
  * @desc    Get Hero and Navbar configuration

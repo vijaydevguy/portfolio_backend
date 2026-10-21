@@ -1,0 +1,275 @@
+[
+  {
+    "name": "Adobeillustrator",
+    "category": "Design Tool",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_v9uxeb.png",
+    "order": 0,
+    "isVisible": true
+  },
+  {
+    "name": "Antigravity",
+    "category": "AI",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_mefmc7.png",
+    "order": 1,
+    "isVisible": true
+  },
+  {
+    "name": "Aws",
+    "category": "Cloud",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_bue8jk.png",
+    "order": 2,
+    "isVisible": true
+  },
+  {
+    "name": "Canva",
+    "category": "Design Tool",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_llrmnx.png",
+    "order": 3,
+    "isVisible": true
+  },
+  {
+    "name": "Cashfree",
+    "category": "Payment Gateways",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_cfs324.png",
+    "order": 4,
+    "isVisible": true
+  },
+  {
+    "name": "Claude",
+    "category": "AI",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_jljlsj.png",
+    "order": 5,
+    "isVisible": true
+  },
+  {
+    "name": "Copilotms",
+    "category": "AI",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_yosbza.png",
+    "order": 6,
+    "isVisible": true
+  },
+  {
+    "name": "Css3",
+    "category": "Frontend",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_m4c0fw.png",
+    "order": 7,
+    "isVisible": true
+  },
+  {
+    "name": "Cursor",
+    "category": "AI",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_vklxsd.png",
+    "order": 8,
+    "isVisible": true
+  },
+  {
+    "name": "Deepseek",
+    "category": "AI",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_qh8low.png",
+    "order": 9,
+    "isVisible": true
+  },
+  {
+    "name": "Docker",
+    "category": "Cloud",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_cfpklv.png",
+    "order": 10,
+    "isVisible": true
+  },
+  {
+    "name": "Expressjs",
+    "category": "Backend",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498028/user_6ad58de963f484bc645d5e3e/skills/icons/file_l1dcwz.png",
+    "order": 11,
+    "isVisible": true
+  },
+  {
+    "name": "Figma",
+    "category": "Design Tool",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_xrpoze.png",
+    "order": 12,
+    "isVisible": true
+  },
+  {
+    "name": "Firebase",
+    "category": "Cloud",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_wkgdak.png",
+    "order": 13,
+    "isVisible": true
+  },
+  {
+    "name": "Framer",
+    "category": "Frontend",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_ll19cm.png",
+    "order": 14,
+    "isVisible": true
+  },
+  {
+    "name": "Gcloud",
+    "category": "Cloud",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_pnlhzr.png",
+    "order": 15,
+    "isVisible": true
+  },
+  {
+    "name": "Gemini",
+    "category": "AI",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_mk2lal.png",
+    "order": 16,
+    "isVisible": true
+  },
+  {
+    "name": "Git",
+    "category": "Deploy",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_rt45wi.png",
+    "order": 17,
+    "isVisible": true
+  },
+  {
+    "name": "Github",
+    "category": "Deploy",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_wdp953.png",
+    "order": 18,
+    "isVisible": true
+  },
+  {
+    "name": "Gsap",
+    "category": "Frontend",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_cfvfnk.png",
+    "order": 19,
+    "isVisible": true
+  },
+  {
+    "name": "Html5",
+    "category": "Frontend",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_mgwmxb.png",
+    "order": 20,
+    "isVisible": true
+  },
+  {
+    "name": "Java",
+    "category": "Core",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_vspkjg.png",
+    "order": 21,
+    "isVisible": true
+  },
+  {
+    "name": "Jira",
+    "category": "Project Management",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_tfq7x7.png",
+    "order": 22,
+    "isVisible": true
+  },
+  {
+    "name": "Js",
+    "category": "Frontend",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_h04gfn.png",
+    "order": 23,
+    "isVisible": true
+  },
+  {
+    "name": "Kubernetes",
+    "category": "Cloud",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_euvgt9.png",
+    "order": 24,
+    "isVisible": true
+  },
+  {
+    "name": "Mongodb",
+    "category": "Database",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_qit2jh.png",
+    "order": 25,
+    "isVisible": true
+  },
+  {
+    "name": "Mysql",
+    "category": "Database",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_wkfqa1.png",
+    "order": 26,
+    "isVisible": true
+  },
+  {
+    "name": "Nextjs2",
+    "category": "Frontend",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_nhpvg3.png",
+    "order": 27,
+    "isVisible": true
+  },
+  {
+    "name": "Nodejs",
+    "category": "Backend",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_nwbdzs.png",
+    "order": 28,
+    "isVisible": true
+  },
+  {
+    "name": "Openai",
+    "category": "AI",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_ah9ztc.png",
+    "order": 29,
+    "isVisible": true
+  },
+  {
+    "name": "Photoshop",
+    "category": "Design Tool",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_vatyly.png",
+    "order": 30,
+    "isVisible": true
+  },
+  {
+    "name": "Postman",
+    "category": "Api testing",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_l5p0ve.png",
+    "order": 31,
+    "isVisible": true
+  },
+  {
+    "name": "Python",
+    "category": "Core",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_sq8it2.png",
+    "order": 32,
+    "isVisible": true
+  },
+  {
+    "name": "React",
+    "category": "Frontend",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_koslj2.png",
+    "order": 33,
+    "isVisible": true
+  },
+  {
+    "name": "Redux",
+    "category": "Frontend",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_ivsnfa.png",
+    "order": 34,
+    "isVisible": true
+  },
+  {
+    "name": "Stripe",
+    "category": "Payment Gateways",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_n3mgyu.png",
+    "order": 35,
+    "isVisible": true
+  },
+  {
+    "name": "Typescript",
+    "category": "Core",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_yijl3x.png",
+    "order": 36,
+    "isVisible": true
+  },
+  {
+    "name": "V8",
+    "category": "Core",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_j7geqd.png",
+    "order": 37,
+    "isVisible": true
+  },
+  {
+    "name": "Vercel",
+    "category": "Deploy",
+    "imageUrl": "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792498027/user_6ad58de963f484bc645d5e3e/skills/icons/file_gsmqyz.png",
+    "order": 38,
+    "isVisible": true
+  }
+]
