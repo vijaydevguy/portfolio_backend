@@ -1,4 +1,5 @@
 const ProjectOption = require("../models/ProjectOption");
+const Project = require("../models/Project");
 
 const DEFAULT_OPTIONS = [
   // Categories
@@ -78,6 +79,13 @@ const createProjectOption = async (req, res) => {
       });
     }
 
+    if (trimmedName.toLowerCase() === "all") {
+      return res.status(400).json({
+        success: false,
+        message: '"All" is a system-reserved default option and cannot be added as a custom entry.',
+      });
+    }
+
     // Check duplicate
     const existing = await ProjectOption.findOne({
       type,
@@ -148,6 +156,13 @@ const updateProjectOption = async (req, res) => {
         });
       }
 
+      if (trimmedName.toLowerCase() === "all") {
+        return res.status(400).json({
+          success: false,
+          message: '"All" is a system-reserved default option and cannot be used as a custom name.',
+        });
+      }
+
       // Check conflict with other items
       const conflict = await ProjectOption.findOne({
         _id: { $ne: id },
@@ -203,6 +218,14 @@ const deleteProjectOption = async (req, res) => {
       });
     }
 
+    // Do not allow deleting "All" if someone created it
+    if (option.name.trim().toLowerCase() === "all") {
+      return res.status(400).json({
+        success: false,
+        message: 'The default "All" option cannot be deleted.',
+      });
+    }
+
     // Ensure we don't delete the last option in this type
     const remainingCount = await ProjectOption.countDocuments({ type: option.type });
     if (remainingCount <= 1) {
@@ -212,18 +235,41 @@ const deleteProjectOption = async (req, res) => {
       });
     }
 
+    // Reassign any projects that were using this category or projectType to "All"
+    let affectedCount = 0;
+    if (option.type === "category") {
+      const matchCriteria = { category: option.name };
+      affectedCount = await Project.countDocuments(matchCriteria);
+      if (affectedCount > 0) {
+        await Project.updateMany(matchCriteria, { $set: { category: "All" } });
+      }
+    } else if (option.type === "projectType") {
+      const matchCriteria = { projectType: option.name };
+      affectedCount = await Project.countDocuments(matchCriteria);
+      if (affectedCount > 0) {
+        await Project.updateMany(matchCriteria, { $set: { projectType: "All" } });
+      }
+    }
+
     await ProjectOption.findByIdAndDelete(id);
+
+    const typeLabel = option.type === "category" ? "Category" : "Project type";
+    const reassignedMsg =
+      affectedCount > 0
+        ? ` ${affectedCount} project(s) previously using it have been automatically reassigned to "All".`
+        : "";
 
     return res.status(200).json({
       success: true,
-      message: `${option.type === "category" ? "Category" : "Project type"} deleted successfully.`,
+      message: `${typeLabel} "${option.name}" deleted successfully.${reassignedMsg}`,
+      affectedProjects: affectedCount,
       data: { id },
     });
   } catch (error) {
     console.error("deleteProjectOption error:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to delete project option",
+      message: `Failed to delete ${option?.type === "category" ? "category" : "project type"}: ${error.message}`,
       error: error.message,
     });
   }
