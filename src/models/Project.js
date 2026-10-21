@@ -16,13 +16,13 @@ const projectSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["Development", "UI / UX Design"],
       default: "Development",
+      trim: true,
     },
     projectType: {
       type: String,
-      enum: ["Professional", "Personal"],
       default: "Personal",
+      trim: true,
     },
     shortDescription: {
       type: String,

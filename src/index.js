@@ -90,6 +90,10 @@ app.use("/api/media", mediaRoutes);
 const projectRoutes = require("./routes/projectRoutes");
 app.use("/api/projects", projectRoutes);
 
+// Project Options (Dynamic Categories & Project Types) Routes
+const projectOptionRoutes = require("./routes/projectOptionRoutes");
+app.use("/api/project-options", projectOptionRoutes);
+
 // Portfolio Skills & Technologies Routes
 const skillRoutes = require("./routes/skillRoutes");
 app.use("/api/skills", skillRoutes);
