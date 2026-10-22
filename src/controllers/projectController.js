@@ -114,10 +114,7 @@ const seedProjectsIfEmpty = async () => {
   }
 };
 
-// @desc    Get all public projects
-// @route   GET /api/projects
-// @access  Public
-// @desc    Get public projects (Lightweight home or full list)
+// @desc    Get public projects (Lightweight home or paginated/filtered list)
 // @route   GET /api/projects
 // @access  Public
 exports.getProjects = async (req, res) => {
@@ -129,17 +126,55 @@ exports.getProjects = async (req, res) => {
 
     if (isHome) {
       query.isFeaturedOnHome = true;
-    } else if (req.query.category && req.query.category !== "All") {
-      query.category = req.query.category;
+    } else {
+      // 1. Category filter
+      if (req.query.category && req.query.category !== "All") {
+        query.category = req.query.category;
+      }
+
+      // 2. Project Type filter (e.g. Professional, Personal)
+      if (req.query.projectType && req.query.projectType !== "All") {
+        query.projectType = req.query.projectType;
+      }
+
+      // 3. Search query across title, shortDescription, role, technologies
+      const search = req.query.search ? req.query.search.trim() : "";
+      if (search) {
+        query.$or = [
+          { title: { $regex: search, $options: "i" } },
+          { shortDescription: { $regex: search, $options: "i" } },
+          { role: { $regex: search, $options: "i" } },
+          { technologies: { $elemMatch: { $regex: search, $options: "i" } } },
+        ];
+      }
     }
 
-    // Case 6: Lightweight payload for landing page (only required keys)
+    // Base query sorted by order asc, then newest first
     let projectQuery = Project.find(query).sort({ order: 1, createdAt: -1 });
 
     if (isHome) {
       projectQuery = projectQuery
         .select("title slug category projectType previewImages shortDescription liveUrl hasDetailPage order")
         .limit(3);
+
+      const projects = await projectQuery.lean();
+      return res.status(200).json({
+        success: true,
+        count: projects.length,
+        total: projects.length,
+        data: projects,
+      });
+    }
+
+    // Backend-level pagination if page or limit query parameters are provided
+    const page = parseInt(req.query.page, 10);
+    const limit = parseInt(req.query.limit, 10);
+
+    const total = await Project.countDocuments(query);
+
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      projectQuery = projectQuery.skip(skip).limit(limit);
     }
 
     const projects = await projectQuery.lean();
@@ -147,6 +182,10 @@ exports.getProjects = async (req, res) => {
     res.status(200).json({
       success: true,
       count: projects.length,
+      total,
+      page: page || 1,
+      totalPages: limit ? Math.ceil(total / limit) || 1 : 1,
+      hasMore: limit && page ? page * limit < total : false,
       data: projects,
     });
   } catch (err) {
