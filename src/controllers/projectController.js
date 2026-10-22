@@ -1,4 +1,5 @@
 const Project = require("../models/Project");
+const cloudinary = require("../config/cloudinary");
 
 const SEED_PROJECTS = [
   {
@@ -384,6 +385,27 @@ exports.deleteProject = async (req, res) => {
     const project = await Project.findById(req.params.id);
     if (!project) {
       return res.status(404).json({ success: false, message: "Project not found" });
+    }
+
+    // Clean up any Cloudinary images associated with this project
+    if (Array.isArray(project.previewImages) && project.previewImages.length > 0) {
+      const MediaAsset = require("../models/MediaAsset");
+      for (const imgUrl of project.previewImages) {
+        if (imgUrl && typeof imgUrl === "string" && imgUrl.includes("res.cloudinary.com")) {
+          try {
+            // Extract publicId from URL
+            // Pattern: /upload/(?:v\d+/)?(user_[^/]+/[^/]+/[^/]+/[^.]+)
+            const match = imgUrl.match(/\/upload\/(?:v\d+\/)?([^.]+)/);
+            if (match && match[1]) {
+              const publicId = match[1];
+              await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+              await MediaAsset.deleteOne({ publicId });
+            }
+          } catch (cleanErr) {
+            console.error("Error deleting image from Cloudinary:", cleanErr.message);
+          }
+        }
+      }
     }
 
     await Project.findByIdAndDelete(req.params.id);
