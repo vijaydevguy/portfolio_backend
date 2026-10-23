@@ -26,7 +26,7 @@ const projectSchema = new mongoose.Schema(
     },
     shortDescription: {
       type: String,
-      required: [true, "Short description is required"],
+      default: "",
       trim: true,
     },
     technologies: {

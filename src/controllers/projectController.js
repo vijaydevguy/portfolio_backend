@@ -344,13 +344,177 @@ exports.getProjectById = async (req, res) => {
   }
 };
 
-// @desc    Create a new project
+/**
+ * Helper: Upload a buffer stream to Cloudinary
+ */
+const uploadToCloudinary = (fileBuffer, options) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(options, (error, result) => {
+      if (error) return reject(error);
+      resolve(result);
+    });
+    uploadStream.end(fileBuffer);
+  });
+};
+
+/**
+ * Helper: Upload files concurrently using Promise.allSettled and map back to final previewImages
+ */
+const processProjectImages = async (files, reqBody, userId, slug) => {
+  const MediaAsset = require("../models/MediaAsset");
+
+  // Parse existing previewImages from body (can be JSON string or array)
+  let existingImages = [];
+  if (reqBody.previewImages) {
+    try {
+      existingImages = typeof reqBody.previewImages === "string"
+        ? JSON.parse(reqBody.previewImages)
+        : reqBody.previewImages;
+    } catch {
+      existingImages = Array.isArray(reqBody.previewImages) ? reqBody.previewImages : [reqBody.previewImages];
+    }
+  }
+
+  // Parse imageOrderMap if provided (e.g. ['url1', 'file:0', 'file:1', 'url2'])
+  let imageOrder = [];
+  if (reqBody.imageOrder) {
+    try {
+      imageOrder = typeof reqBody.imageOrder === "string" ? JSON.parse(reqBody.imageOrder) : reqBody.imageOrder;
+    } catch {
+      imageOrder = [];
+    }
+  }
+
+  const failedUploads = [];
+  const uploadedFileMap = new Map(); // file index -> uploaded url
+
+  if (Array.isArray(files) && files.length > 0) {
+    const folderPath = `user_${userId || "admin"}/projects/${slug || "gallery"}`;
+
+    // Concurrently upload all attached files using Promise.allSettled
+    const uploadTasks = files.map((file, fileIdx) => {
+      const uploadOptions = {
+        folder: folderPath,
+        resource_type: "auto",
+        use_filename: true,
+        unique_filename: true,
+      };
+
+      return uploadToCloudinary(file.buffer, uploadOptions)
+        .then(async (cloudinaryResult) => {
+          // Derive clean short path
+          const uploadRegex = /\/upload\/(?:[a-zA-Z0-9_,]+\/)?(.*)$/;
+          const match = cloudinaryResult.secure_url.match(uploadRegex);
+          const shortPath = match && match[1] ? match[1] : cloudinaryResult.public_id;
+
+          // Record MediaAsset
+          await MediaAsset.create({
+            userId: userId || null,
+            section: "projects",
+            category: slug || "gallery",
+            publicId: cloudinaryResult.public_id,
+            url: cloudinaryResult.url,
+            secureUrl: cloudinaryResult.secure_url,
+            shortPath,
+            originalName: file.originalname,
+            format: cloudinaryResult.format,
+            bytes: cloudinaryResult.bytes,
+            resourceType: cloudinaryResult.resource_type,
+          });
+
+          return {
+            fileIdx,
+            originalName: file.originalname,
+            url: cloudinaryResult.secure_url,
+          };
+        });
+    });
+
+    const settledResults = await Promise.allSettled(uploadTasks);
+
+    settledResults.forEach((res, idx) => {
+      const file = files[idx];
+      if (res.status === "fulfilled") {
+        uploadedFileMap.set(idx, res.value.url);
+      } else {
+        const errorMsg = res.reason?.message || "Cloudinary upload failed";
+        console.error(`[Project Upload Failed] ${file.originalname}:`, errorMsg);
+        failedUploads.push({
+          originalName: file.originalname,
+          reason: errorMsg,
+        });
+      }
+    });
+  }
+
+  // Reconstruct final previewImages array adhering to user-defined order
+  let finalPreviewImages = [];
+
+  if (Array.isArray(imageOrder) && imageOrder.length > 0) {
+    imageOrder.forEach((token) => {
+      if (typeof token === "string" && token.startsWith("file:")) {
+        const fIdx = parseInt(token.split(":")[1], 10);
+        if (uploadedFileMap.has(fIdx)) {
+          finalPreviewImages.push(uploadedFileMap.get(fIdx));
+        }
+      } else if (typeof token === "string" && token.trim()) {
+        finalPreviewImages.push(token.trim());
+      }
+    });
+  } else {
+    // Default fallback: existing urls first, then new uploaded urls
+    finalPreviewImages = [...existingImages];
+    for (const [_, url] of uploadedFileMap.entries()) {
+      finalPreviewImages.push(url);
+    }
+  }
+
+  return {
+    finalPreviewImages,
+    failedUploads,
+  };
+};
+
+/**
+ * Helper: Safely parse JSON or scalar fields from FormData body
+ */
+const sanitizeProjectBody = (body) => {
+  const data = { ...body };
+  delete data.files;
+  delete data.imageOrder;
+
+  if (typeof data.technologies === "string") {
+    try {
+      data.technologies = JSON.parse(data.technologies);
+    } catch {
+      data.technologies = data.technologies.split(",").map((s) => s.trim()).filter(Boolean);
+    }
+  }
+
+  if (typeof data.hasDetailPage === "string") {
+    data.hasDetailPage = data.hasDetailPage === "true";
+  }
+  if (typeof data.isVisible === "string") {
+    data.isVisible = data.isVisible === "true";
+  }
+  if (typeof data.isFeaturedOnHome === "string") {
+    data.isFeaturedOnHome = data.isFeaturedOnHome === "true";
+  }
+  if (typeof data.order === "string") {
+    data.order = Number(data.order) || 0;
+  }
+
+  return data;
+};
+
+// @desc    Create a new project (Single API: FormData fields + files + Promise.allSettled)
 // @route   POST /api/projects
 // @access  Private (Admin)
 exports.createProject = async (req, res) => {
   try {
-    const { title, slug } = req.body;
-    if (!title) {
+    const body = req.body || {};
+    const { title, slug } = body;
+    if (!title || !title.trim()) {
       return res.status(400).json({ success: false, message: "Project title is required" });
     }
 
@@ -366,15 +530,26 @@ exports.createProject = async (req, res) => {
       return res.status(400).json({ success: false, message: "A project with this slug already exists" });
     }
 
-    const project = await Project.create({
-      ...req.body,
-      slug: finalSlug,
-    });
+    // Process all attached image files with Promise.allSettled
+    const userId = req.user ? req.user._id.toString() : null;
+    const { finalPreviewImages, failedUploads } = await processProjectImages(
+      req.files || [],
+      body,
+      userId,
+      finalSlug
+    );
+
+    const projectData = sanitizeProjectBody(body);
+    projectData.slug = finalSlug;
+    projectData.previewImages = finalPreviewImages;
+
+    const project = await Project.create(projectData);
 
     res.status(201).json({
       success: true,
       message: "Project created successfully",
       data: project,
+      failedUploads, // Detail any specific files that failed so frontend can notify user
     });
   } catch (err) {
     console.error("Error in createProject:", err);
@@ -382,25 +557,40 @@ exports.createProject = async (req, res) => {
   }
 };
 
-// @desc    Update project
+// @desc    Update project (Single API: FormData fields + files + Promise.allSettled)
 // @route   PUT /api/projects/:id
 // @access  Private (Admin)
 exports.updateProject = async (req, res) => {
   try {
+    const body = req.body || {};
     let project = await Project.findById(req.params.id);
     if (!project) {
       return res.status(404).json({ success: false, message: "Project not found" });
     }
 
     // Check slug collision if slug is being updated
-    if (req.body.slug && req.body.slug !== project.slug) {
-      const existing = await Project.findOne({ slug: req.body.slug, _id: { $ne: project._id } });
+    if (body.slug && body.slug !== project.slug) {
+      const existing = await Project.findOne({ slug: body.slug, _id: { $ne: project._id } });
       if (existing) {
         return res.status(400).json({ success: false, message: "A project with this slug already exists" });
       }
     }
 
-    project = await Project.findByIdAndUpdate(req.params.id, req.body, {
+    const currentSlug = body.slug || project.slug;
+
+    // Process all attached image files with Promise.allSettled
+    const userId = req.user ? req.user._id.toString() : null;
+    const { finalPreviewImages, failedUploads } = await processProjectImages(
+      req.files || [],
+      body,
+      userId,
+      currentSlug
+    );
+
+    const projectData = sanitizeProjectBody(body);
+    projectData.previewImages = finalPreviewImages;
+
+    project = await Project.findByIdAndUpdate(req.params.id, projectData, {
       new: true,
       runValidators: true,
     });
@@ -409,6 +599,7 @@ exports.updateProject = async (req, res) => {
       success: true,
       message: "Project updated successfully",
       data: project,
+      failedUploads, // Detail any specific files that failed so frontend can notify user
     });
   } catch (err) {
     console.error("Error in updateProject:", err);
