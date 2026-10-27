@@ -73,6 +73,7 @@ const updateHeroSection = async (req, res) => {
         isPrimary: Boolean(r.isPrimary),
       }));
       hero.resumes = sanitizedResumes;
+      hero.markModified("resumes");
     }
 
     await hero.save();

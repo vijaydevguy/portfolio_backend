@@ -12,19 +12,23 @@ const defaultSkills = require("./defaultSkills.json");
  * 1. Hero & Navbar Section Defaults
  */
 const DEFAULT_HERO_DATA = {
-  logoText: "Vijay Kumar",
-  logoUrl: "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792239298/logo_white_4x-1_caa6ld.png",
+  logoText: "test name",
+  logoUrl: "",
   titlePrefix: "Software",
   titleHighlight: "Developer",
-  subtitle: "Crafting scalable, high-performance web applications and intuitive digital experiences.",
-  heroImageUrl: "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792249847/hero_img_oharzk",
-  resumes: [
-    {
-      label: "Download Resume",
-      url: "https://drive.google.com/uc?export=download&id=1QfIBC0J_QRX4MRoycDwEdD3xBt2kKSpE",
-      isPrimary: true,
-    },
-  ],
+  subtitle:
+    "Crafting scalable, high-performance web applications and intuitive digital experiences.",
+  heroImageUrl:
+    "https://res.cloudinary.com/dtgn3hnzh/image/upload/v1792249847/hero_img_oharzk",
+  // resumes: [
+  //   {
+  //     label: "Download Resume",
+  //     // Dummy url commented out as requested
+  //     // url: "https://drive.google.com/uc?export=download&id=1QfIBC0J_QRX4MRoycDwEdD3xBt2kKSpE",
+  //     url: "",
+  //     isPrimary: true,
+  //   },
+  // ],
   ctaContactText: "Get in Touch",
   ctaContactHref: "#contact",
   isVisible: true,
